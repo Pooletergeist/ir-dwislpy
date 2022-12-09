@@ -1,0 +1,982 @@
+Terminals unused in grammar
+
+    "or"
+    "not"
+    "if"
+    "else"
+    "while"
+    "-"
+    "*"
+    "//"
+    "%"
+    "<="
+    "=="
+
+
+Grammar
+
+    0 $accept: main EOFL
+
+    1 main: prgm
+
+    2 prgm: blck
+    3     | defs blck
+
+    4 defs: defn
+    5     | defs defn
+
+    6 defn: "def" NAME "(" ")" "->" type ":" EOLN nest
+    7     | "def" NAME "(" ")" ":" EOLN nest
+    8     | "def" NAME "(" fmls ")" "->" type ":" EOLN nest
+    9     | "def" NAME "(" fmls ")" ":" EOLN nest
+
+   10 fmls: NAME ":" type
+   11     | fmls "," NAME ":" type
+
+   12 type: "int"
+   13     | "str"
+   14     | "bool"
+   15     | "None"
+
+   16 nest: INDT blck DEDT
+
+   17 blck: stms
+
+   18 stms: stms stmt
+   19     | stmt
+
+   20 stmt: NAME ":" type "=" expn EOLN
+   21     | NAME "=" expn EOLN
+   22     | "pass" EOLN
+   23     | "print" "(" expn ")" EOLN
+   24     | "return" expn EOLN
+   25     | "return" EOLN
+
+   26 expn: expn "+" expn
+   27     | expn "<" expn
+   28     | expn "and" expn
+   29     | NMBR
+   30     | STRG
+   31     | "True"
+   32     | "False"
+   33     | "None"
+   34     | "input" "(" expn ")"
+   35     | NAME
+   36     | "(" expn ")"
+
+
+Terminals, with rules where they appear
+
+    EOFL (0) 0
+    error (256)
+    EOLN (258) 6 7 8 9 20 21 22 23 24 25
+    INDT (259) 16
+    DEDT (260) 16
+    "pass" (261) 22
+    "print" (262) 23
+    "input" (263) 34
+    "bool" (264) 14
+    "int" (265) 12
+    "str" (266) 13
+    "def" (267) 6 7 8 9
+    "return" (268) 24 25
+    "and" (269) 28
+    "or" (270)
+    "not" (271)
+    "if" (272)
+    "else" (273)
+    "while" (274)
+    "->" (275) 6 8
+    "=" (276) 20 21
+    "+" (277) 26
+    "-" (278)
+    "*" (279)
+    "//" (280)
+    "%" (281)
+    "<=" (282)
+    "<" (283) 27
+    "==" (284)
+    "(" (285) 6 7 8 9 23 34 36
+    ")" (286) 6 7 8 9 23 34 36
+    "," (287) 11
+    ":" (288) 6 7 8 9 10 11 20
+    "None" (289) 15 33
+    "True" (290) 31
+    "False" (291) 32
+    NMBR <int> (292) 29
+    NAME <std::string> (293) 6 7 8 9 10 11 20 21 35
+    STRG <std::string> (294) 30
+
+
+Nonterminals, with rules where they appear
+
+    $accept (40)
+        on left: 0
+    main (41)
+        on left: 1
+        on right: 0
+    prgm <Prgm_ptr> (42)
+        on left: 2 3
+        on right: 1
+    defs <Defs> (43)
+        on left: 4 5
+        on right: 3 5
+    defn <Defn_ptr> (44)
+        on left: 6 7 8 9
+        on right: 4 5
+    fmls <SymT> (45)
+        on left: 10 11
+        on right: 8 9 11
+    type <Type> (46)
+        on left: 12 13 14 15
+        on right: 6 8 10 11 20
+    nest <Blck_ptr> (47)
+        on left: 16
+        on right: 6 7 8 9
+    blck <Blck_ptr> (48)
+        on left: 17
+        on right: 2 3 16
+    stms <Stmt_vec> (49)
+        on left: 18 19
+        on right: 17 18
+    stmt <Stmt_ptr> (50)
+        on left: 20 21 22 23 24 25
+        on right: 18 19
+    expn <Expn_ptr> (51)
+        on left: 26 27 28 29 30 31 32 33 34 35 36
+        on right: 20 21 23 24 26 27 28 34 36
+
+
+State 0
+
+    0 $accept: . main EOFL
+
+    "pass"    shift, and go to state 1
+    "print"   shift, and go to state 2
+    "def"     shift, and go to state 3
+    "return"  shift, and go to state 4
+    NAME      shift, and go to state 5
+
+    main  go to state 6
+    prgm  go to state 7
+    defs  go to state 8
+    defn  go to state 9
+    blck  go to state 10
+    stms  go to state 11
+    stmt  go to state 12
+
+
+State 1
+
+   22 stmt: "pass" . EOLN
+
+    EOLN  shift, and go to state 13
+
+
+State 2
+
+   23 stmt: "print" . "(" expn ")" EOLN
+
+    "("  shift, and go to state 14
+
+
+State 3
+
+    6 defn: "def" . NAME "(" ")" "->" type ":" EOLN nest
+    7     | "def" . NAME "(" ")" ":" EOLN nest
+    8     | "def" . NAME "(" fmls ")" "->" type ":" EOLN nest
+    9     | "def" . NAME "(" fmls ")" ":" EOLN nest
+
+    NAME  shift, and go to state 15
+
+
+State 4
+
+   24 stmt: "return" . expn EOLN
+   25     | "return" . EOLN
+
+    EOLN     shift, and go to state 16
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 25
+
+
+State 5
+
+   20 stmt: NAME . ":" type "=" expn EOLN
+   21     | NAME . "=" expn EOLN
+
+    "="  shift, and go to state 26
+    ":"  shift, and go to state 27
+
+
+State 6
+
+    0 $accept: main . EOFL
+
+    EOFL  shift, and go to state 28
+
+
+State 7
+
+    1 main: prgm .
+
+    $default  reduce using rule 1 (main)
+
+
+State 8
+
+    3 prgm: defs . blck
+    5 defs: defs . defn
+
+    "pass"    shift, and go to state 1
+    "print"   shift, and go to state 2
+    "def"     shift, and go to state 3
+    "return"  shift, and go to state 4
+    NAME      shift, and go to state 5
+
+    defn  go to state 29
+    blck  go to state 30
+    stms  go to state 11
+    stmt  go to state 12
+
+
+State 9
+
+    4 defs: defn .
+
+    $default  reduce using rule 4 (defs)
+
+
+State 10
+
+    2 prgm: blck .
+
+    $default  reduce using rule 2 (prgm)
+
+
+State 11
+
+   17 blck: stms .
+   18 stms: stms . stmt
+
+    "pass"    shift, and go to state 1
+    "print"   shift, and go to state 2
+    "return"  shift, and go to state 4
+    NAME      shift, and go to state 5
+
+    $default  reduce using rule 17 (blck)
+
+    stmt  go to state 31
+
+
+State 12
+
+   19 stms: stmt .
+
+    $default  reduce using rule 19 (stms)
+
+
+State 13
+
+   22 stmt: "pass" EOLN .
+
+    $default  reduce using rule 22 (stmt)
+
+
+State 14
+
+   23 stmt: "print" "(" . expn ")" EOLN
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 32
+
+
+State 15
+
+    6 defn: "def" NAME . "(" ")" "->" type ":" EOLN nest
+    7     | "def" NAME . "(" ")" ":" EOLN nest
+    8     | "def" NAME . "(" fmls ")" "->" type ":" EOLN nest
+    9     | "def" NAME . "(" fmls ")" ":" EOLN nest
+
+    "("  shift, and go to state 33
+
+
+State 16
+
+   25 stmt: "return" EOLN .
+
+    $default  reduce using rule 25 (stmt)
+
+
+State 17
+
+   34 expn: "input" . "(" expn ")"
+
+    "("  shift, and go to state 34
+
+
+State 18
+
+   36 expn: "(" . expn ")"
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 35
+
+
+State 19
+
+   33 expn: "None" .
+
+    $default  reduce using rule 33 (expn)
+
+
+State 20
+
+   31 expn: "True" .
+
+    $default  reduce using rule 31 (expn)
+
+
+State 21
+
+   32 expn: "False" .
+
+    $default  reduce using rule 32 (expn)
+
+
+State 22
+
+   29 expn: NMBR .
+
+    $default  reduce using rule 29 (expn)
+
+
+State 23
+
+   35 expn: NAME .
+
+    $default  reduce using rule 35 (expn)
+
+
+State 24
+
+   30 expn: STRG .
+
+    $default  reduce using rule 30 (expn)
+
+
+State 25
+
+   24 stmt: "return" expn . EOLN
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+
+    EOLN   shift, and go to state 36
+    "and"  shift, and go to state 37
+    "+"    shift, and go to state 38
+    "<"    shift, and go to state 39
+
+
+State 26
+
+   21 stmt: NAME "=" . expn EOLN
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 40
+
+
+State 27
+
+   20 stmt: NAME ":" . type "=" expn EOLN
+
+    "bool"  shift, and go to state 41
+    "int"   shift, and go to state 42
+    "str"   shift, and go to state 43
+    "None"  shift, and go to state 44
+
+    type  go to state 45
+
+
+State 28
+
+    0 $accept: main EOFL .
+
+    $default  accept
+
+
+State 29
+
+    5 defs: defs defn .
+
+    $default  reduce using rule 5 (defs)
+
+
+State 30
+
+    3 prgm: defs blck .
+
+    $default  reduce using rule 3 (prgm)
+
+
+State 31
+
+   18 stms: stms stmt .
+
+    $default  reduce using rule 18 (stms)
+
+
+State 32
+
+   23 stmt: "print" "(" expn . ")" EOLN
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+
+    "and"  shift, and go to state 37
+    "+"    shift, and go to state 38
+    "<"    shift, and go to state 39
+    ")"    shift, and go to state 46
+
+
+State 33
+
+    6 defn: "def" NAME "(" . ")" "->" type ":" EOLN nest
+    7     | "def" NAME "(" . ")" ":" EOLN nest
+    8     | "def" NAME "(" . fmls ")" "->" type ":" EOLN nest
+    9     | "def" NAME "(" . fmls ")" ":" EOLN nest
+
+    ")"   shift, and go to state 47
+    NAME  shift, and go to state 48
+
+    fmls  go to state 49
+
+
+State 34
+
+   34 expn: "input" "(" . expn ")"
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 50
+
+
+State 35
+
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+   36     | "(" expn . ")"
+
+    "and"  shift, and go to state 37
+    "+"    shift, and go to state 38
+    "<"    shift, and go to state 39
+    ")"    shift, and go to state 51
+
+
+State 36
+
+   24 stmt: "return" expn EOLN .
+
+    $default  reduce using rule 24 (stmt)
+
+
+State 37
+
+   28 expn: expn "and" . expn
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 52
+
+
+State 38
+
+   26 expn: expn "+" . expn
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 53
+
+
+State 39
+
+   27 expn: expn "<" . expn
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 54
+
+
+State 40
+
+   21 stmt: NAME "=" expn . EOLN
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+
+    EOLN   shift, and go to state 55
+    "and"  shift, and go to state 37
+    "+"    shift, and go to state 38
+    "<"    shift, and go to state 39
+
+
+State 41
+
+   14 type: "bool" .
+
+    $default  reduce using rule 14 (type)
+
+
+State 42
+
+   12 type: "int" .
+
+    $default  reduce using rule 12 (type)
+
+
+State 43
+
+   13 type: "str" .
+
+    $default  reduce using rule 13 (type)
+
+
+State 44
+
+   15 type: "None" .
+
+    $default  reduce using rule 15 (type)
+
+
+State 45
+
+   20 stmt: NAME ":" type . "=" expn EOLN
+
+    "="  shift, and go to state 56
+
+
+State 46
+
+   23 stmt: "print" "(" expn ")" . EOLN
+
+    EOLN  shift, and go to state 57
+
+
+State 47
+
+    6 defn: "def" NAME "(" ")" . "->" type ":" EOLN nest
+    7     | "def" NAME "(" ")" . ":" EOLN nest
+
+    "->"  shift, and go to state 58
+    ":"   shift, and go to state 59
+
+
+State 48
+
+   10 fmls: NAME . ":" type
+
+    ":"  shift, and go to state 60
+
+
+State 49
+
+    8 defn: "def" NAME "(" fmls . ")" "->" type ":" EOLN nest
+    9     | "def" NAME "(" fmls . ")" ":" EOLN nest
+   11 fmls: fmls . "," NAME ":" type
+
+    ")"  shift, and go to state 61
+    ","  shift, and go to state 62
+
+
+State 50
+
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+   34     | "input" "(" expn . ")"
+
+    "and"  shift, and go to state 37
+    "+"    shift, and go to state 38
+    "<"    shift, and go to state 39
+    ")"    shift, and go to state 63
+
+
+State 51
+
+   36 expn: "(" expn ")" .
+
+    $default  reduce using rule 36 (expn)
+
+
+State 52
+
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+   28     | expn "and" expn .
+
+    "+"  shift, and go to state 38
+    "<"  shift, and go to state 39
+
+    $default  reduce using rule 28 (expn)
+
+
+State 53
+
+   26 expn: expn . "+" expn
+   26     | expn "+" expn .
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+
+    $default  reduce using rule 26 (expn)
+
+
+State 54
+
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   27     | expn "<" expn .
+   28     | expn . "and" expn
+
+    "+"  shift, and go to state 38
+
+    "<"  error (nonassociative)
+
+    $default  reduce using rule 27 (expn)
+
+
+State 55
+
+   21 stmt: NAME "=" expn EOLN .
+
+    $default  reduce using rule 21 (stmt)
+
+
+State 56
+
+   20 stmt: NAME ":" type "=" . expn EOLN
+
+    "input"  shift, and go to state 17
+    "("      shift, and go to state 18
+    "None"   shift, and go to state 19
+    "True"   shift, and go to state 20
+    "False"  shift, and go to state 21
+    NMBR     shift, and go to state 22
+    NAME     shift, and go to state 23
+    STRG     shift, and go to state 24
+
+    expn  go to state 64
+
+
+State 57
+
+   23 stmt: "print" "(" expn ")" EOLN .
+
+    $default  reduce using rule 23 (stmt)
+
+
+State 58
+
+    6 defn: "def" NAME "(" ")" "->" . type ":" EOLN nest
+
+    "bool"  shift, and go to state 41
+    "int"   shift, and go to state 42
+    "str"   shift, and go to state 43
+    "None"  shift, and go to state 44
+
+    type  go to state 65
+
+
+State 59
+
+    7 defn: "def" NAME "(" ")" ":" . EOLN nest
+
+    EOLN  shift, and go to state 66
+
+
+State 60
+
+   10 fmls: NAME ":" . type
+
+    "bool"  shift, and go to state 41
+    "int"   shift, and go to state 42
+    "str"   shift, and go to state 43
+    "None"  shift, and go to state 44
+
+    type  go to state 67
+
+
+State 61
+
+    8 defn: "def" NAME "(" fmls ")" . "->" type ":" EOLN nest
+    9     | "def" NAME "(" fmls ")" . ":" EOLN nest
+
+    "->"  shift, and go to state 68
+    ":"   shift, and go to state 69
+
+
+State 62
+
+   11 fmls: fmls "," . NAME ":" type
+
+    NAME  shift, and go to state 70
+
+
+State 63
+
+   34 expn: "input" "(" expn ")" .
+
+    $default  reduce using rule 34 (expn)
+
+
+State 64
+
+   20 stmt: NAME ":" type "=" expn . EOLN
+   26 expn: expn . "+" expn
+   27     | expn . "<" expn
+   28     | expn . "and" expn
+
+    EOLN   shift, and go to state 71
+    "and"  shift, and go to state 37
+    "+"    shift, and go to state 38
+    "<"    shift, and go to state 39
+
+
+State 65
+
+    6 defn: "def" NAME "(" ")" "->" type . ":" EOLN nest
+
+    ":"  shift, and go to state 72
+
+
+State 66
+
+    7 defn: "def" NAME "(" ")" ":" EOLN . nest
+
+    INDT  shift, and go to state 73
+
+    nest  go to state 74
+
+
+State 67
+
+   10 fmls: NAME ":" type .
+
+    $default  reduce using rule 10 (fmls)
+
+
+State 68
+
+    8 defn: "def" NAME "(" fmls ")" "->" . type ":" EOLN nest
+
+    "bool"  shift, and go to state 41
+    "int"   shift, and go to state 42
+    "str"   shift, and go to state 43
+    "None"  shift, and go to state 44
+
+    type  go to state 75
+
+
+State 69
+
+    9 defn: "def" NAME "(" fmls ")" ":" . EOLN nest
+
+    EOLN  shift, and go to state 76
+
+
+State 70
+
+   11 fmls: fmls "," NAME . ":" type
+
+    ":"  shift, and go to state 77
+
+
+State 71
+
+   20 stmt: NAME ":" type "=" expn EOLN .
+
+    $default  reduce using rule 20 (stmt)
+
+
+State 72
+
+    6 defn: "def" NAME "(" ")" "->" type ":" . EOLN nest
+
+    EOLN  shift, and go to state 78
+
+
+State 73
+
+   16 nest: INDT . blck DEDT
+
+    "pass"    shift, and go to state 1
+    "print"   shift, and go to state 2
+    "return"  shift, and go to state 4
+    NAME      shift, and go to state 5
+
+    blck  go to state 79
+    stms  go to state 11
+    stmt  go to state 12
+
+
+State 74
+
+    7 defn: "def" NAME "(" ")" ":" EOLN nest .
+
+    $default  reduce using rule 7 (defn)
+
+
+State 75
+
+    8 defn: "def" NAME "(" fmls ")" "->" type . ":" EOLN nest
+
+    ":"  shift, and go to state 80
+
+
+State 76
+
+    9 defn: "def" NAME "(" fmls ")" ":" EOLN . nest
+
+    INDT  shift, and go to state 73
+
+    nest  go to state 81
+
+
+State 77
+
+   11 fmls: fmls "," NAME ":" . type
+
+    "bool"  shift, and go to state 41
+    "int"   shift, and go to state 42
+    "str"   shift, and go to state 43
+    "None"  shift, and go to state 44
+
+    type  go to state 82
+
+
+State 78
+
+    6 defn: "def" NAME "(" ")" "->" type ":" EOLN . nest
+
+    INDT  shift, and go to state 73
+
+    nest  go to state 83
+
+
+State 79
+
+   16 nest: INDT blck . DEDT
+
+    DEDT  shift, and go to state 84
+
+
+State 80
+
+    8 defn: "def" NAME "(" fmls ")" "->" type ":" . EOLN nest
+
+    EOLN  shift, and go to state 85
+
+
+State 81
+
+    9 defn: "def" NAME "(" fmls ")" ":" EOLN nest .
+
+    $default  reduce using rule 9 (defn)
+
+
+State 82
+
+   11 fmls: fmls "," NAME ":" type .
+
+    $default  reduce using rule 11 (fmls)
+
+
+State 83
+
+    6 defn: "def" NAME "(" ")" "->" type ":" EOLN nest .
+
+    $default  reduce using rule 6 (defn)
+
+
+State 84
+
+   16 nest: INDT blck DEDT .
+
+    $default  reduce using rule 16 (nest)
+
+
+State 85
+
+    8 defn: "def" NAME "(" fmls ")" "->" type ":" EOLN . nest
+
+    INDT  shift, and go to state 73
+
+    nest  go to state 86
+
+
+State 86
+
+    8 defn: "def" NAME "(" fmls ")" "->" type ":" EOLN nest .
+
+    $default  reduce using rule 8 (defn)
