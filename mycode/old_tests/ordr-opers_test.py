@@ -1,0 +1,5 @@
+print(3 + 4 * 5 == 35)
+print(4*5+3)
+print(False or False == False)
+print(True or True and False)
+print(not 1 == 2 or 3 == 4)
