@@ -19,7 +19,7 @@ OBJ=$(SRC:.cc=.o)
 
 all:  $(TARGET)
 
-dwislpy: dwislpy-flex.o dwislpy-bison.tab.o dwislpy-main.o dwislpy-ast.o dwislpy-util.o dwislpy-check.o
+dwislpy: dwislpy-flex.o dwislpy-bison.tab.o dwislpyc.o dwislpy-inst.o dwislpy-mips.o dwislpy-ast.o dwislpy-util.o dwislpy-check.o
 		$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^
 
 lexer: dwislpy-flex.cc
