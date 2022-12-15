@@ -267,19 +267,19 @@ expn:
       $$ = IMod_ptr { new IMod {$1,$3,lexer.locate(@2)} };
   }
 | NMBR {
-      $$ = Ltrl_ptr { new Ltrl {Valu {$1},lexer.locate(@1)} };
+      $$ = Ltrl_ptr { new Ltrl {Valu {$1}, IntTy{}, lexer.locate(@1)} };
   }
 | STRG {
-      $$ = Ltrl_ptr { new Ltrl {Valu {de_escape($1)},lexer.locate(@1)} };
+      $$ = Ltrl_ptr { new Ltrl {Valu {de_escape($1)}, StrTy{}, lexer.locate(@1)} };
   }
 | TRUE {
-      $$ = Ltrl_ptr { new Ltrl {Valu {true},lexer.locate(@1)} };
+      $$ = Ltrl_ptr { new Ltrl {Valu {true}, BoolTy{}, lexer.locate(@1)} };
   }
 | FALS {
-      $$ = Ltrl_ptr { new Ltrl {Valu {false},lexer.locate(@1)} };
+      $$ = Ltrl_ptr { new Ltrl {Valu {false}, BoolTy{}, lexer.locate(@1)} };
   }
 | NONE {
-      $$ = Ltrl_ptr { new Ltrl {Valu {None},lexer.locate(@1)} };
+      $$ = Ltrl_ptr { new Ltrl {Valu {None}, NoneTy{}, lexer.locate(@1)} };
   }    
 | INPT LPAR expn RPAR {
       $$ = Inpt_ptr { new Inpt {$3,lexer.locate(@1)} };
@@ -344,5 +344,6 @@ xpns:
 %%
        
 void DWISLPY::Parser::error(const location_type &loc, const std::string &msg) {
+    std::cout<<"over there"<<std::endl;
     throw DwislpyError { lexer.locate(loc), msg };
 }

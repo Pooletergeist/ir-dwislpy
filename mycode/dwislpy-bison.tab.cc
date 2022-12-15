@@ -1410,7 +1410,7 @@ namespace DWISLPY {
   case 40:
 #line 269 "dwislpy-bison.yy"
        {
-      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {yystack_[0].value.as < int > ()},lexer.locate(yystack_[0].location)} };
+      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {yystack_[0].value.as < int > ()}, IntTy{}, lexer.locate(yystack_[0].location)} };
   }
 #line 1416 "dwislpy-bison.tab.cc"
     break;
@@ -1418,7 +1418,7 @@ namespace DWISLPY {
   case 41:
 #line 272 "dwislpy-bison.yy"
        {
-      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {de_escape(yystack_[0].value.as < std::string > ())},lexer.locate(yystack_[0].location)} };
+      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {de_escape(yystack_[0].value.as < std::string > ())}, StrTy{}, lexer.locate(yystack_[0].location)} };
   }
 #line 1424 "dwislpy-bison.tab.cc"
     break;
@@ -1426,7 +1426,7 @@ namespace DWISLPY {
   case 42:
 #line 275 "dwislpy-bison.yy"
        {
-      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {true},lexer.locate(yystack_[0].location)} };
+      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {true}, BoolTy{}, lexer.locate(yystack_[0].location)} };
   }
 #line 1432 "dwislpy-bison.tab.cc"
     break;
@@ -1434,7 +1434,7 @@ namespace DWISLPY {
   case 43:
 #line 278 "dwislpy-bison.yy"
        {
-      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {false},lexer.locate(yystack_[0].location)} };
+      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {false}, BoolTy{}, lexer.locate(yystack_[0].location)} };
   }
 #line 1440 "dwislpy-bison.tab.cc"
     break;
@@ -1442,7 +1442,7 @@ namespace DWISLPY {
   case 44:
 #line 281 "dwislpy-bison.yy"
        {
-      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {None},lexer.locate(yystack_[0].location)} };
+      yylhs.value.as < Expn_ptr > () = Ltrl_ptr { new Ltrl {Valu {None}, NoneTy{}, lexer.locate(yystack_[0].location)} };
   }
 #line 1448 "dwislpy-bison.tab.cc"
     break;
@@ -2133,5 +2133,6 @@ namespace DWISLPY {
 
        
 void DWISLPY::Parser::error(const location_type &loc, const std::string &msg) {
+    std::cout<<"over there"<<std::endl;
     throw DwislpyError { lexer.locate(loc), msg };
 }

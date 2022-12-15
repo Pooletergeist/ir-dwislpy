@@ -43,8 +43,13 @@ void Prgm::trans(void) {
 
     // Translate each definition into IR.
     // 
+    /* Jim's:
     for (std::pair<Name,Defn_ptr> dfpr : defs) {
         Defn_ptr defn = dfpr.second;
+        defn->symt.set_parent(glbl_symt_ptr); // Set parent to global table.
+        defn->trans();
+    }*/
+    for (Defn_ptr defn : defs) {
         defn->symt.set_parent(glbl_symt_ptr); // Set parent to global table.
         defn->trans();
     }
@@ -76,7 +81,7 @@ void Defn::trans(void) {
     //
     code.push_back(INST_ptr { new LBL {def_lbl} });
     code.push_back(INST_ptr { new ENTER {} });
-    body->trans(ext_lbl,symt,code);
+    nest->trans(ext_lbl,symt,code);
     code.push_back(INST_ptr { new LBL {ext_lbl} });
     code.push_back(INST_ptr { new LEAVE {} }); 
 }
@@ -94,6 +99,10 @@ void Blck::trans(std::string exit, SymT& symt, INST_vec& code) {
     for (Stmt_ptr stmt: stmts) {
         stmt->trans(exit,symt,code);
     }
+}
+
+void Nest::trans(std::string exit, SymT& symt, INST_vec& code) {
+    blck->trans(exit,symt,code);
 }
 
 // * * * * * 
@@ -114,18 +123,18 @@ void Ntro::trans([[maybe_unused]]std::string exit,
 
 // MODIFIED: added trans methods for Pleq and Mneq. Tmeq not in my compiler.
 
-void Pleq::trans([[maybe_unused]]std::string exit,
+void PlEq::trans([[maybe_unused]]std::string exit,
                  SymT& symt, INST_vec& code) {
     std::string temp = symt.add_temp(expn->type); // make temporary.
     expn->trans(temp,symt,code); // evaluate expression into temporary.
-    code.push_back(INST_ptr {new ADD {name, temp, name}}; // add temp with name.
+    code.push_back(INST_ptr {new ADD {name, temp, name}}); // add temp with name.
 }
 
-void Mneq::trans([[maybe_unused]]std::string exit,
+void MnEq::trans([[maybe_unused]]std::string exit,
                  SymT& symt, INST_vec& code) {
     std::string temp = symt.add_temp(expn->type); // make temporary.
     expn->trans(temp,symt,code); // evaluate expression into temporary.
-    code.push_back(INST_ptr {new SUB {name, name, temp}}; // sub temp from name.
+    code.push_back(INST_ptr {new SUB {name, name, temp}}); // sub temp from name.
 }
 
 void Asgn::trans([[maybe_unused]]std::string exit,
@@ -133,9 +142,15 @@ void Asgn::trans([[maybe_unused]]std::string exit,
     expn->trans(name,symt,code);
 }
 
-void FRtn::trans(std::string exit, SymT& symt, INST_vec& code) {
-    std::string temp = symt.add_temp(expn->type);
-    expn->trans(temp,symt,code);
+void Rtrn::trans(std::string exit, SymT& symt, INST_vec& code) {
+    std::string temp;
+    if (expn) { // not nullptr. function!
+        std::string temp = symt.add_temp(expn->type);
+        expn->trans(temp,symt,code);
+    } else { // procedure!
+        std::string temp = symt.add_temp(NoneTy {});
+        code.push_back(INST_ptr {new SET {temp,0}});
+    }
     code.push_back(INST_ptr {new RTN {temp}});
     code.push_back(INST_ptr {new JMP {exit}});
 }
@@ -144,9 +159,9 @@ void Ifif::trans(std::string exit, SymT& symt, INST_vec& code) {
     // uses trans_cndn of the conditional expression to 
     // jump to a section of the code that is the translation
     // of the first or second block...
-    std::string then_lbl = symt.add_label();
-    std::string othw_lbl = symt.add_label(); 
-    std::string done_lbl = symt.add_label();
+    std::string then_lbl = symt.add_labl();
+    std::string othw_lbl = symt.add_labl(); 
+    std::string done_lbl = symt.add_labl();
     cond->trans_cndn(then_lbl, othw_lbl, symt, code);
     code.push_back(INST_ptr {new LBL {then_lbl}});
     frst->trans(exit, symt, code);
@@ -160,9 +175,9 @@ void Whil::trans(std::string exit, SymT& symt, INST_vec& code) {
     // makes label, uses trans_cndn of conditional to decide
     // whether to procede into loop body, and jump to top label,
     // or to be done
-    std::string loop_lbl = symt.add_label();
-    std::string cont_lbl = symt.add_label();
-    std::string done_lbl = symt.add_label();
+    std::string loop_lbl = symt.add_labl();
+    std::string cont_lbl = symt.add_labl();
+    std::string done_lbl = symt.add_labl();
     code.push_back(INST_ptr {new LBL {loop_lbl}});
     cond->trans_cndn(cont_lbl, done_lbl, symt, code);
     code.push_back(INST_ptr {new LBL {cont_lbl}});
@@ -173,19 +188,28 @@ void Whil::trans(std::string exit, SymT& symt, INST_vec& code) {
 
 void Untl::trans(std::string exit, SymT& symt, INST_vec& code) {
     // similar to whil, but does nest before cndn
-    std::string loop_lbl = symt.add_label();
-    std::string done_lbl = symt.add_label();
+    std::string loop_lbl = symt.add_labl();
+    std::string done_lbl = symt.add_labl();
     code.push_back(INST_ptr {new LBL {loop_lbl}});
     nest->trans(exit,symt,code);
     cond->trans_cndn(loop_lbl, done_lbl, symt, code); 
     code.push_back(INST_ptr {new LBL {done_lbl}});
 }
 
-void PRtn::trans(std::string exit, SymT& symt, INST_vec& code) {
-    std::string temp = symt.add_temp(NoneTy {});
-    code.push_back(INST_ptr {new SET {temp,0}});
-    code.push_back(INST_ptr {new RTN {temp}});
-    code.push_back(INST_ptr {new JMP {exit}});
+void Proc::trans(std::string dest, SymT& symt, INST_vec& code) {
+    // for expn
+        // 1. evaluate to temporary
+        // 2. pass as argument
+    // call name
+    // return result (none)
+    int arg_num = 0;
+    for (Expn_ptr expn : xpns) {
+        std::string temp = symt.add_temp(expn->type);
+        expn->trans(temp, symt, code);
+        code.push_back(INST_ptr {new ARG {arg_num, temp}});
+    }
+    code.push_back(INST_ptr {new CLL {name}});
+    // disregard/do nothing with RTV
 }
 
 void Pass::trans([[maybe_unused]]std::string exit,
@@ -195,43 +219,53 @@ void Pass::trans([[maybe_unused]]std::string exit,
 
 void Prnt::trans([[maybe_unused]]std::string exit,
                  SymT& symt, INST_vec& code) {
-    if (std::holds_alternative<IntTy>(expn->type)) {
-        std::string temp = symt.add_temp(IntTy {});
-        expn->trans(temp,symt,code);
-        code.push_back(INST_ptr {new PTI {temp}});
-    }
-    if (std::holds_alternative<StrTy>(expn->type)) {
-        std::string temp = symt.add_temp(StrTy {});
-        expn->trans(temp,symt,code);
-        code.push_back(INST_ptr {new PTS {temp}});
-    }
-    if (std::holds_alternative<BoolTy>(expn->type)) {
-        std::string true_lbl = symt.add_labl();
-        std::string flse_lbl = symt.add_labl();
-        std::string done_lbl = symt.add_labl();
-        std::string temp = symt.add_temp(BoolTy {});
-        //
-        expn->trans_cndn(true_lbl,flse_lbl,symt,code);
-        code.push_back(INST_ptr {new LBL {true_lbl}});
-        code.push_back(INST_ptr {new STL {temp,TRUE_STRG_LBL}});
-        code.push_back(INST_ptr {new JMP {done_lbl}});
-        code.push_back(INST_ptr {new LBL {flse_lbl}});
-        code.push_back(INST_ptr {new STL {temp,FLSE_STRG_LBL}});
-        code.push_back(INST_ptr {new LBL {done_lbl}});
-        code.push_back(INST_ptr {new PTS {temp}});        
-    }
-    if (std::holds_alternative<NoneTy>(expn->type)) {
-        std::string dumm = symt.add_temp(NoneTy {});
-        std::string temp = symt.add_temp(StrTy {});
-        //
-        expn->trans(dumm,symt,code);
-        code.push_back(INST_ptr {new STL {temp,NONE_STRG_LBL}});
-        code.push_back(INST_ptr {new PTS {temp}});        
-    }
+    Expn_ptr expn = xpns[0];
+    //for (Expn_ptr expn : xpns) {
+    //std::cout<<expn<<std::endl;
+    std::cout<<is_int(expn->type)<<std::endl;
+
+        if (std::holds_alternative<IntTy>(expn->type)) {
+            std::cout<<"printing int"<<std::endl;
+            std::string temp = symt.add_temp(IntTy {});
+            expn->trans(temp,symt,code);
+            code.push_back(INST_ptr {new PTI {temp}});
+        }
+        if (std::holds_alternative<StrTy>(expn->type)) {
+            std::cout<<"printing str"<<std::endl;
+            std::string temp = symt.add_temp(StrTy {});
+            expn->trans(temp,symt,code);
+            code.push_back(INST_ptr {new PTS {temp}});
+        }
+        if (std::holds_alternative<BoolTy>(expn->type)) {
+            std::cout<<"printing bool"<<std::endl;
+            std::string true_lbl = symt.add_labl();
+            std::string flse_lbl = symt.add_labl();
+            std::string done_lbl = symt.add_labl();
+            std::string temp = symt.add_temp(BoolTy {});
+            //
+            expn->trans_cndn(true_lbl,flse_lbl,symt,code);
+            code.push_back(INST_ptr {new LBL {true_lbl}});
+            code.push_back(INST_ptr {new STL {temp,TRUE_STRG_LBL}});
+            code.push_back(INST_ptr {new JMP {done_lbl}});
+            code.push_back(INST_ptr {new LBL {flse_lbl}});
+            code.push_back(INST_ptr {new STL {temp,FLSE_STRG_LBL}});
+            code.push_back(INST_ptr {new LBL {done_lbl}});
+            code.push_back(INST_ptr {new PTS {temp}});        
+        }
+        if (std::holds_alternative<NoneTy>(expn->type)) {
+            std::cout<<"printing none"<<std::endl;
+            std::string dumm = symt.add_temp(NoneTy {});
+            std::string temp = symt.add_temp(StrTy {});
+            //
+            expn->trans(dumm,symt,code);
+            code.push_back(INST_ptr {new STL {temp,NONE_STRG_LBL}});
+            code.push_back(INST_ptr {new PTS {temp}});        
+        }
+    //}
     std::string eoln = symt.add_temp(StrTy {});
     code.push_back(INST_ptr {new STL {eoln,EOLN_STRG_LBL}});
     code.push_back(INST_ptr {new PTS {eoln}});        
-}
+ }
 
 // * * * * * 
 //
@@ -275,6 +309,29 @@ void Mnus::trans(std::string dest, SymT& symt, INST_vec& code) {
 }
 
 void Plus::trans(std::string dest, SymT& symt, INST_vec& code) {
+    if (std::holds_alternative<IntTy>(type)) {
+        std::string srce1 = symt.add_temp(left->type);
+        std::string srce2 = symt.add_temp(rght->type);
+        left->trans(srce1,symt,code);
+        rght->trans(srce2,symt,code);
+        code.push_back(INST_ptr {new ADD {dest,srce1,srce2}});
+    }
+}
+
+// UNIMPLEMENTED: idiv & imod
+void IDiv::trans(std::string dest, SymT& symt, INST_vec& code) {
+    std::string msg = "hi";
+    std::cout<<msg<<std::endl;
+    if (std::holds_alternative<IntTy>(type)) {
+        std::string srce1 = symt.add_temp(left->type);
+        std::string srce2 = symt.add_temp(rght->type);
+        left->trans(srce1,symt,code);
+        rght->trans(srce2,symt,code);
+        code.push_back(INST_ptr {new ADD {dest,srce1,srce2}});
+    }
+}
+
+void IMod::trans(std::string dest, SymT& symt, INST_vec& code) {
     if (std::holds_alternative<IntTy>(type)) {
         std::string srce1 = symt.add_temp(left->type);
         std::string srce2 = symt.add_temp(rght->type);
@@ -441,6 +498,11 @@ void Conj::trans(std::string dest, SymT& symt, INST_vec& code) {
 
 void Func::trans_cndn (std::string then_lbl, std::string else_lbl,
                      SymT& symt, INST_vec& code) {
+    // build temporary, translate function, store into temporary
+    // branch if temporary is greater than 0
+    std::string func_temp = symt.add_temp(BoolTy {});
+    trans(func_temp, symt, code);
+    code.push_back(INST_ptr {new BCZ {"gtz", func_temp, then_lbl, else_lbl}});
 }
 
 void Func::trans(std::string dest, SymT& symt, INST_vec& code) {
@@ -451,14 +513,14 @@ void Func::trans(std::string dest, SymT& symt, INST_vec& code) {
     // return result
     int arg_num = 0;
     for (Expn_ptr expn : xpns) {
-        std::string temp = symt.add_temp();
-        expn->eval(temp, symt, code);
+        std::string temp = symt.add_temp(expn->type);
+        expn->trans(temp, symt, code);
         code.push_back(INST_ptr {new ARG {arg_num, temp}});
     }
-    code.push_back(INST_ptr {new CLL {name});
+    code.push_back(INST_ptr {new CLL {name}});
     // how does RTV get into dest? 
     // it doesn't seem like Defn or anything that returns uses dest
-    code.push_back(INST_ptr {new RTV {dest});
+    code.push_back(INST_ptr {new RTV {dest}});
 }
 
 void Ltrl::trans(std::string dest, SymT& symt, INST_vec& code) {
@@ -510,3 +572,11 @@ void Inpt::trans(std::string dest, SymT& symt, INST_vec& code) {
     code.push_back(INST_ptr {new PTS {strg}});
     code.push_back(INST_ptr {new GTI {dest}});
 }
+
+void IntC::trans (std::string dest, SymT& symt, INST_vec& code) { // unimpt
+}
+
+void StrC::trans (std::string dest, SymT& symt, INST_vec& code) { // unimpt
+}
+
+

@@ -757,7 +757,7 @@ static const flex_int16_t yy_rule_linenum[47] =
     int DWISLPY::Lexer::issue(int tkn_typ, std::string txt,
                               location_type *l) {
         advance_by_text(txt,l);
-        // debug_token(tkn_typ,txt,l);
+        debug_token(tkn_typ,txt,l);
         return tkn_typ;
     }  
     

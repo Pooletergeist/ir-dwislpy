@@ -101,6 +101,13 @@ void DWISLPY::Driver::dump(bool pretty) {
     }
 }
 
+bool check_flag(int argc, char** argv, std::string flag) {
+    for (int i=1; i<argc; i++) {
+        if (strcmp(flag.c_str(),argv[i]) == 0) return true;
+    }
+    return false;
+}
+
 char* extract_filename(int argc, char** argv) {
     for (int i=1; i<argc; i++) {
         if (argv[i][0] != '-') return argv[i];
@@ -115,6 +122,7 @@ char* extract_filename(int argc, char** argv) {
 int main(int argc, char** argv) {
     
     char* filename = extract_filename(argc,argv);
+    bool dump = check_flag(argc,argv, "--dump");
     
     if (filename) {
         
@@ -128,16 +136,23 @@ int main(int argc, char** argv) {
             //
             // Parse.
             //
+            //std::cout<<"pre-parse"<<std::endl;
             dwislpy.parse();
+
+            if (dump) {
+                dwislpy.dump(false); // not prettyprint
+            }
 
             //
             // Check.
             //
+            std::cout<<"pre-check"<<std::endl;
             dwislpy.check();
             
             //
             // Compile.
             //
+            std::cout<<"pre-compile"<<std::endl;
             dwislpy.compile();
             
         } catch (DwislpyError se) {

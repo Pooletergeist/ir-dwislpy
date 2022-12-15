@@ -1,5 +1,5 @@
 UNAME := $(shell uname)
-TARGET=dwislpy
+TARGET=dwislpyc
 CXX=clang++
 YACCFLAGS=-d -v
 ifeq ($(UNAME), Darwin)
@@ -19,7 +19,7 @@ OBJ=$(SRC:.cc=.o)
 
 all:  $(TARGET)
 
-dwislpy: dwislpy-flex.o dwislpy-bison.tab.o dwislpyc.o dwislpy-inst.o dwislpy-mips.o dwislpy-ast.o dwislpy-util.o dwislpy-check.o
+dwislpyc: dwislpy-flex.o dwislpy-bison.tab.o dwislpyc.o dwislpy-ast.o dwislpy-check.o dwislpy-inst.o dwislpy-mips.o dwislpy-util.o 
 		$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^
 
 lexer: dwislpy-flex.cc
@@ -29,11 +29,8 @@ dwislpy-flex.cc: dwislpy-flex.ll dwislpy-flex.hh dwislpy-util.hh parser
 
 parser: dwislpy-bison.tab.cc dwislpy-bison.tab.hh
 
-dwislpy-bison.tab.cc: dwislpy-bison.yy dwislpy-ast.hh dwislpy-util.hh dwislpy-main.hh dwislpy-check.hh
+dwislpy-bison.tab.cc: dwislpy-bison.yy dwislpy-ast.hh dwislpy-check.hh dwislpy-util.hh dwislpy-main.hh 
 		$(YACC) $(YACCFLAGS) dwislpy-bison.yy
-
-load-display: load-display.o
-		$(CXX) $(LDFLAGS) -o $@ $^
 
 %.o: %.cc %.hh
 		$(CXX) $(CXXFLAGS) $(OPTFLAGS) -c -o $@ $<

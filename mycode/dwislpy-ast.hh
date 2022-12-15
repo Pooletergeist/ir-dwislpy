@@ -197,6 +197,8 @@ public:
     Defs defs;
     Blck_ptr main;
     SymT main_symt;
+    SymT_ptr glbl_symt_ptr; // New for HW5
+    INST_vec main_code; // HW5
     //
     Prgm(Defs ds, Blck_ptr mn, Locn lo) :
         AST {lo}, defs {ds}, main {mn}, main_symt{} { }
@@ -224,6 +226,7 @@ public:
     virtual void output(std::ostream& os) const;
     virtual void dump(int level = 0) const;
     virtual Rtns chck(Rtns expd, Defs& defs, SymT& symt);
+    virtual void trans(std::string exit, SymT& symt, INST_vec& code);
 };
 
 //
@@ -239,6 +242,7 @@ public:
     SymT symt;
     Type rety; 
     Nest_ptr nest; 
+    INST_vec code; // HW5
     //
     Defn(Name nm, SymT sy, Type rt, Nest_ptr ns, Locn lo) : 
         AST {lo}, name {nm}, symt {sy}, rety {rt}, nest {ns}  { }
@@ -519,6 +523,7 @@ class Expn : public AST {
 public:
     Type type; // for translation into IR.
     Expn(Locn lo) : AST {lo} { }
+    Expn(Type ty, Locn lo) : type {ty}, AST{lo} { }
     virtual ~Expn(void) = default;
     virtual Valu eval(const Defs& defs, const Ctxt& ctxt) const = 0;
     virtual Type chck(Defs& defs, SymT& symt) = 0;
@@ -752,7 +757,7 @@ public:
 class Ltrl : public Expn {
 public:
     Valu valu;
-    Ltrl(Valu vl, Locn lo) : Expn {lo}, valu {vl} { }
+    Ltrl(Valu vl, Type ty, Locn lo) : Expn {ty,lo}, valu {vl} { }
     virtual ~Ltrl(void) = default;
     virtual Valu eval(const Defs& defs, const Ctxt& ctxt) const;
     virtual void output(std::ostream& os) const;

@@ -11,6 +11,7 @@
 
 #include "dwislpy-ast.hh"
 #include "dwislpy-util.hh"
+#include "dwislpy-check.hh" // for type_name debug
 
 //
 // dwislpy-ast.cc
@@ -848,7 +849,7 @@ void Prgm::dump(int level) const {
 void Defn::dump(int level) const {
     // from Jim's starter
     dump_indent(level);
-    std::cout << "DEFN" << std::endl;
+    std::cout << "DEFN" << type_name(rety) << std::endl;
     dump_indent(level+1);
     std::cout << name << std::endl;
     for (unsigned int i=0; i < arity(); i++) {
@@ -966,7 +967,7 @@ void Pass::dump(int level) const {
 
 void Func::dump(int level) const {
     dump_indent(level);
-    std::cout << "FUNC" << std::endl;
+    std::cout << "FUNC" << type_name(type) << std::endl;
     for (Expn_ptr expn : xpns) {
         expn->dump(level+1);
     }
@@ -974,7 +975,7 @@ void Func::dump(int level) const {
 
 void Conj::dump(int level) const {
     dump_indent(level);
-    std::cout << "CONJ" << std::endl;
+    std::cout << "CONJ" << type_name(type) << std::endl;
     left->dump(level+1);
     rght->dump(level+1);
 }
@@ -1050,7 +1051,7 @@ void LNot::dump(int level) const {
 
 void Ltrl::dump(int level) const {
     dump_indent(level);
-    std::cout << "LTRL" << std::endl;
+    std::cout << "LTRL" << type_name(type) << std::endl;
     dump_indent(level+1);
     std::cout << to_repr(valu) << std::endl;
 }

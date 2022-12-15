@@ -398,6 +398,7 @@ Type Func::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
         throw DwislpyError { where(), msg };
     }
 
+    type = my_func->rety; // tag call with its return type (HW5)
     // return type from def
     return my_func->rety;
 }
@@ -482,8 +483,10 @@ Type Plus::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (left_ty == Type {IntTy {}} && rght_ty == Type {IntTy {}}) {
+        type = IntTy{}; // HW5
         return Type {IntTy {}};
     } else if (is_str(left_ty) && is_str(rght_ty)) {
+        type = StrTy{}; // HW5
         return Type {StrTy {}}; 
     } else {
         std::string msg = "Wrong operand types for plus.";
@@ -496,6 +499,7 @@ Type Mnus::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_int(left_ty) && is_int(rght_ty)) { // both int?
+        type = IntTy{}; // HW5
         return Type {IntTy {}};
     } else {
         std::string msg = "Mistmatched operand types for Mnus.";
@@ -508,6 +512,7 @@ Type Tmes::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_int(left_ty) && is_int(rght_ty)) { // both int?
+        type = IntTy{}; // HW5
         return Type {IntTy {}};
     } else {
         std::string msg = "Mistmatched operand types for Tmes.";
@@ -520,6 +525,7 @@ Type IMod::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_int(left_ty) && is_int(rght_ty)) { // both int?
+        type = IntTy{}; // HW5
         return Type {IntTy {}};
     } else {
         std::string msg = "Mistmatched operand types for IMod.";
@@ -532,6 +538,7 @@ Type IDiv::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_int(left_ty) && is_int(rght_ty)) { // both int?
+        type = IntTy{}; // HW5
         return Type {IntTy {}};
     } else {
         std::string msg = "Mistmatched operand types for IDiv.";
