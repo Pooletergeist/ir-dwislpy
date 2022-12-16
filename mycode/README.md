@@ -2,15 +2,19 @@
 # HW. 5 submission. JMP - Dec 12
 #
 
-FNC broken. other stuff works?
-cond.slpy is an example of arithmetic, assignment, comparisons, loops & conditionals, and logic.
-
-I haven't gotten functions working yet.
-
 Hi Jim,
-This Zip has my current work on HW5. I'm still working on it — trying to get
+This Zip has my work on HW5! I'm still working on it — trying to get
 func calls working  (step 6) so I can play guess 6. But feeling
 pretty confident in the earlier exercises with tests like "cond.slpy"
+
+cond.slpy is an example of arithmetic, assignment, comparisons, loops & conditionals, and logic. It compiles and runs as spim, which is nice.
+
+I haven't gotten functions working yet. I've uploaded a screenshot of the way arguments are getting swapped around and string arguments are lost -- scratching my head on that one!
+
+Have a good winter break!
+
+
+-- scratch --
 
 
 NOTES:
