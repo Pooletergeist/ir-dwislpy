@@ -9,10 +9,8 @@ I haven't gotten functions working yet.
 
 Hi Jim,
 This Zip has my current work on HW5. I'm still working on it — trying to get
-the new starter code to play nice with my HW4 submission. In the meatnime, I've
-written translation code for all the exercise but have yet to test it. 
-I'm feeling shaky on my return code for Func calls (step 6) but feeling
-pretty confident in the earlier exercises.
+func calls working  (step 6) so I can play guess 6. But feeling
+pretty confident in the earlier exercises with tests like "cond.slpy"
 
 
 NOTES:
