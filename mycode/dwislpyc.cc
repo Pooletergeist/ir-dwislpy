@@ -83,8 +83,11 @@ void DWISLPY::Driver::compile(void) {
     std::ofstream out_stream { };
     size_t thedot = src_name.find_last_of("."); 
     std::string out_name = src_name.substr(0, thedot) + ".s"; 
+    std::cout<<"dwislpyc-hithere"<<std::endl;
     out_stream.open(out_name);
+    std::cout<<program<<std::endl;
     program->compile(out_stream);
+    std::cout<<"pre-close"<<std::endl;
     out_stream.close();
 }
 
@@ -154,6 +157,7 @@ int main(int argc, char** argv) {
             //
             std::cout<<"pre-compile"<<std::endl;
             dwislpy.compile();
+            std::cout<<"postcompile"<<std::endl;
             
         } catch (DwislpyError se) {
             

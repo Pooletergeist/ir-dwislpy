@@ -12,30 +12,39 @@ L_0:
 	.text
 	.globl main
 main:
+	sw $ra,-8($sp)
+	sw $fp,-12($sp)
+	move $fp, $sp
+	addi $sp,$sp,-32
+	li $t0,5
+	sw $t0,-4($fp)
+	lw $a0,-4($fp)
+	jal ifif
+main_done:
+	lw $ra,-8($fp)
+	lw $fp,-12($fp)
+	addi $sp,$sp,32
+	jr $ra
+ifif:
 	sw $ra,-12($sp)
 	sw $fp,-16($sp)
 	move $fp, $sp
 	addi $sp,$sp,-32
-	j L_8
-L_8:
+	sw $a0,0($fp)
 	j L_5
 L_5:
-	la $t0,L_1
+	li $t0,3
 	sw $t0,-4($fp)
+	lw $v0,-4($fp)
+	j ifif_done
 	j L_7
 L_6:
-	la $t0,L_2
-	sw $t0,-4($fp)
-L_7:
-	li $v0,4
-	lw $a0,-4($fp)
-	syscall
-	la $t0,L_0
+	li $t0,4
 	sw $t0,-8($fp)
-	li $v0,4
-	lw $a0,-8($fp)
-	syscall
-main_done:
+	lw $v0,-8($fp)
+	j ifif_done
+L_7:
+ifif_done:
 	lw $ra,-12($fp)
 	lw $fp,-16($fp)
 	addi $sp,$sp,32

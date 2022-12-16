@@ -523,7 +523,6 @@ class Expn : public AST {
 public:
     Type type; // for translation into IR.
     Expn(Locn lo) : AST {lo} { }
-    Expn(Type ty, Locn lo) : type {ty}, AST{lo} { }
     virtual ~Expn(void) = default;
     virtual Valu eval(const Defs& defs, const Ctxt& ctxt) const = 0;
     virtual Type chck(Defs& defs, SymT& symt) = 0;
@@ -757,7 +756,7 @@ public:
 class Ltrl : public Expn {
 public:
     Valu valu;
-    Ltrl(Valu vl, Type ty, Locn lo) : Expn {ty,lo}, valu {vl} { }
+    Ltrl(Valu vl, Locn lo) : Expn {lo}, valu {vl} { }
     virtual ~Ltrl(void) = default;
     virtual Valu eval(const Defs& defs, const Ctxt& ctxt) const;
     virtual void output(std::ostream& os) const;

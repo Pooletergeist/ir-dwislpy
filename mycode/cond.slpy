@@ -1,0 +1,9 @@
+x : int = 4
+y : int = 2
+while 0 < x:
+    if x == 2 and True:
+        print("half")
+    else:
+        if True or False:
+            print(x*y)
+    x -= 1

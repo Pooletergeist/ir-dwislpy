@@ -246,7 +246,7 @@ Rtns Asgn::chck(Rtns expd, Defs& defs, SymT& symt) {
         Type t1 = symt.get_info(name)->type; // lhs type
         Type t2 = expn->chck(defs,symt); // rhs type
         if (t1 == t2) { // same type
-            return Type {NoneTy {}}; // checks-out! & we say Asgn no return
+            return Rtns {Void {}}; // checks-out! & we say Asgn no return
         } else {
             std::string msg = "Mismatch types for Asgn";
             throw DwislpyError { where(), msg };
@@ -408,6 +408,7 @@ Type Conj::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_bool(left_ty) && is_bool(rght_ty)) { // both bool?
+        type = BoolTy {};
         return Type {BoolTy {}}; 
     } else {
         std::string msg = "Mistmatched operand types for Conj.";
@@ -420,6 +421,7 @@ Type Disj::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_bool(left_ty) && is_bool(rght_ty)) { // both bool?
+        type = BoolTy {};
         return Type {BoolTy {}}; 
     } else {
         std::string msg = "Mistmatched operand types for Disj.";
@@ -432,6 +434,7 @@ Type Less::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_int(left_ty) && is_int(rght_ty)) { // both int?
+        type = BoolTy {};
         return Type {BoolTy {}};
     } else {
         std::string msg = "Mistmatched operand types for Less.";
@@ -444,6 +447,7 @@ Type LsEq::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_int(left_ty) && is_int(rght_ty)) { // both int?
+        type = BoolTy {};
         return Type {BoolTy {}};
     } else {
         std::string msg = "Mistmatched operand types for LsEq.";
@@ -456,10 +460,13 @@ Type Equl::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     Type left_ty = left->chck(defs,symt);
     Type rght_ty = rght->chck(defs,symt);
     if (is_int(left_ty) && is_int(rght_ty)) { // both int?
+        type = BoolTy {};
         return Type {BoolTy {}};
     } else if (is_str(left_ty) && is_str(rght_ty)) { // both str?
+        type = BoolTy {};
         return Type {BoolTy {}}; 
     } else if (is_bool(left_ty) && is_bool(rght_ty)) { // both bool?
+        type = BoolTy {};
         return Type {BoolTy {}}; 
     } else {
         std::string msg = "Mistmatched operand types for Equl.";
@@ -471,6 +478,7 @@ Type LNot::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     // takes bool. returns bool
     Type expn_ty = expn->chck(defs,symt);
     if (is_bool(expn_ty)) { // Not takes a bool
+        type = BoolTy {};
         return Type {BoolTy {}}; // Not returns a bool
     } else {
         std::string msg = "Wrong input type to LNot";
@@ -548,19 +556,25 @@ Type IDiv::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
 
 Type Ltrl::chck([[maybe_unused]] Defs& defs, [[maybe_unused]] SymT& symt) {
     if (std::holds_alternative<int>(valu)) {
+        type = IntTy {};
         return Type {IntTy {}};
     } else if (std::holds_alternative<std::string>(valu)) {
+        type = StrTy {};
         return Type {StrTy {}};
     } if (std::holds_alternative<bool>(valu)) {
+        type = BoolTy {};
         return Type {BoolTy {}};
     } else {
+        type = NoneTy{};
         return Type {NoneTy {}};
     }
 }
 
 Type Lkup::chck(Defs& defs, SymT& symt) {
     if (symt.has_info(name)) {
-        return symt.get_info(name)->type;
+        Type t = symt.get_info(name)->type;
+        type = t;
+        return t;
     } else {
         throw DwislpyError {where(), "Unknown identifier."};
     }

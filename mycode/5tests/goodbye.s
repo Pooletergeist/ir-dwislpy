@@ -1,4 +1,6 @@
 	.data
+L_5:
+	.asciiz "hi"
 L_4:
 	.asciiz "12345678901234567890123456789012345678901234567890123456789012345678901234567890"
 L_2:
@@ -12,31 +14,25 @@ L_0:
 	.text
 	.globl main
 main:
-	sw $ra,-12($sp)
-	sw $fp,-16($sp)
+	sw $ra,-16($sp)
+	sw $fp,-20($sp)
 	move $fp, $sp
-	addi $sp,$sp,-32
-	j L_8
-L_8:
-	j L_5
-L_5:
-	la $t0,L_1
+	addi $sp,$sp,-40
+	la $t0,L_5
 	sw $t0,-4($fp)
-	j L_7
-L_6:
-	la $t0,L_2
-	sw $t0,-4($fp)
-L_7:
-	li $v0,4
-	lw $a0,-4($fp)
+	lw $t1,-4($fp)
+	move $t0,$t1
+	sw $t0,-8($fp)
+	lw $a0,-8($fp)
+	li $v0,1
 	syscall
 	la $t0,L_0
-	sw $t0,-8($fp)
+	sw $t0,-12($fp)
 	li $v0,4
-	lw $a0,-8($fp)
+	lw $a0,-12($fp)
 	syscall
 main_done:
-	lw $ra,-12($fp)
-	lw $fp,-16($fp)
-	addi $sp,$sp,32
+	lw $ra,-16($fp)
+	lw $fp,-20($fp)
+	addi $sp,$sp,40
 	jr $ra

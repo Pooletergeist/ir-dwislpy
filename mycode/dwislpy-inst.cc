@@ -61,11 +61,15 @@ void Prgm::trans(void) {
     std::string def_lbl = main_symt.add_labl("main");
     std::string ext_lbl = main_symt.add_labl("main_done");
     //
+    std::cout<<"begin"<<std::endl;
     main_code.push_back(INST_ptr { new LBL {def_lbl} });
     main_code.push_back(INST_ptr { new ENTER {} });
+    if (main) {
     main->trans(ext_lbl,main_symt,main_code); // Note: ext_lbl won't get used.
+    }
     main_code.push_back(INST_ptr { new LBL {ext_lbl} });
     main_code.push_back(INST_ptr { new LEAVE {} });
+    std::cout<<"end"<<std::endl;
 }
 
 //
@@ -143,32 +147,41 @@ void Asgn::trans([[maybe_unused]]std::string exit,
 }
 
 void Rtrn::trans(std::string exit, SymT& symt, INST_vec& code) {
-    std::string temp;
     if (expn) { // not nullptr. function!
+    std::cout<<"trns-rtrn"<<std::endl;
         std::string temp = symt.add_temp(expn->type);
         expn->trans(temp,symt,code);
+        code.push_back(INST_ptr {new RTN {temp}});
     } else { // procedure!
+    std::cout<<"trns-proc-rtrn"<<std::endl;
         std::string temp = symt.add_temp(NoneTy {});
         code.push_back(INST_ptr {new SET {temp,0}});
+        code.push_back(INST_ptr {new RTN {temp}});
     }
-    code.push_back(INST_ptr {new RTN {temp}});
     code.push_back(INST_ptr {new JMP {exit}});
+    std::cout<<"doone"<<std::endl;
 }
 
 void Ifif::trans(std::string exit, SymT& symt, INST_vec& code) {
     // uses trans_cndn of the conditional expression to 
     // jump to a section of the code that is the translation
     // of the first or second block...
+    std::cout<<"start if"<<std::endl;
     std::string then_lbl = symt.add_labl();
     std::string othw_lbl = symt.add_labl(); 
     std::string done_lbl = symt.add_labl();
     cond->trans_cndn(then_lbl, othw_lbl, symt, code);
     code.push_back(INST_ptr {new LBL {then_lbl}});
+    std::cout<<"midif"<<std::endl;
     frst->trans(exit, symt, code);
+    std::cout<<"3q"<<std::endl;
     code.push_back(INST_ptr {new JMP {done_lbl}});
     code.push_back(INST_ptr {new LBL {othw_lbl}});
-    scnd->trans(exit, symt, code);
-    code.push_back(INST_ptr {new LBL {done_lbl}});
+    if (scnd) {
+        scnd->trans(exit, symt, code);
+    }
+        code.push_back(INST_ptr {new LBL {done_lbl}});
+    std::cout<<"done if"<<std::endl;
 }
 
 void Whil::trans(std::string exit, SymT& symt, INST_vec& code) {
@@ -219,10 +232,9 @@ void Pass::trans([[maybe_unused]]std::string exit,
 
 void Prnt::trans([[maybe_unused]]std::string exit,
                  SymT& symt, INST_vec& code) {
-    Expn_ptr expn = xpns[0];
-    //for (Expn_ptr expn : xpns) {
+    for (Expn_ptr expn : xpns) {
     //std::cout<<expn<<std::endl;
-    std::cout<<is_int(expn->type)<<std::endl;
+    //std::cout<<is_int(expn->type)<<std::endl;
 
         if (std::holds_alternative<IntTy>(expn->type)) {
             std::cout<<"printing int"<<std::endl;
@@ -261,7 +273,7 @@ void Prnt::trans([[maybe_unused]]std::string exit,
             code.push_back(INST_ptr {new STL {temp,NONE_STRG_LBL}});
             code.push_back(INST_ptr {new PTS {temp}});        
         }
-    //}
+    }
     std::string eoln = symt.add_temp(StrTy {});
     code.push_back(INST_ptr {new STL {eoln,EOLN_STRG_LBL}});
     code.push_back(INST_ptr {new PTS {eoln}});        

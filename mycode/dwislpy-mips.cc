@@ -80,8 +80,14 @@ void compile_defn(std::ostream& os, SymT& symt, INST_vec& code) {
     
     symt.set_frame_size(frame_size);
 
+    std::cout<<"dwislpymips-here"<<std::endl;
+
+    std::cout<<code.size() << "-many instructions" << std::endl;
+    int i = 1;
     for (INST_ptr inst : code) {
         inst->toMIPS(os,symt);
+        std::cout<<i<<std::endl;
+        i ++;
     }
 }
 
@@ -111,6 +117,7 @@ void Prgm::compile(std::ostream& os) {
         os << "\t.asciiz " << strg << std::endl;
     }
     
+    std::cout<<"dwislpy-mips, compile"<<std::endl;
     // Generate the `.text` section filled with `main` and each `def`'s
     // (labelled) code.
     //
@@ -122,9 +129,12 @@ void Prgm::compile(std::ostream& os) {
         Defn_ptr defn = dfpr.second;
         compile_defn(os,defn->symt,defn->code);
     }*/
+    std::cout<<defs.size()<< "-many defs" << std::endl;
+    std::cout<<"maindone"<<std::endl;
     for (Defn_ptr defn : defs) {
         compile_defn(os,defn->symt,defn->code);
     }
+    std::cout<<"alldone"<<std::endl;
 }
 
 //
